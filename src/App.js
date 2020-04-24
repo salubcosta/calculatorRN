@@ -6,14 +6,44 @@ import Display from './components/Display';
 
 const App = ()=>{
 
-    const [displayValue, setDisplayValue] = useState(2);
+    const initialState =()=> {
+        setDisplayValue('0');
+        setClearDisplay(false);
+        setOp(null);
+        setValues([0,0]);
+        setCurrent(0);
+    }
+
+    const [displayValue, setDisplayValue] = useState('0');
+    const [clearDisplay, setClearDisplay] = useState(false);
+    const [oparation, setOp] = useState(null);
+    const [values, setValues] = useState([0,0]);
+    const [current, setCurrent] = useState(0);
 
     const addDigit = n =>{
-        setDisplayValue(n)
+        // Esta validação não deixa incluir mais de 1 ponto. Ex: 84.5.2
+        if(n ==='.' && displayValue.includes('.')){
+            return
+        }
+        
+        // Esta validação faz com que não seja incluído 0 à esquerda. Ex: 00086.2 
+        const _clearDisplay = displayValue === '0' || clearDisplay;
+        const _current = _clearDisplay ? '' : displayValue;
+        const _displayValue = _current + n;
+
+        setDisplayValue(_displayValue); // Atualiza display
+        setClearDisplay(false) ; //Seta pra false para atribuir valor _current linha 31
+
+        if(n !== '.'){
+            const _newValue = parseFloat(_displayValue);
+            const _values = values;
+            _values[current] = _newValue;
+            setValues({_values})
+        }
     }
 
     const clearMemory = ()=>{
-        setDisplayValue(0)
+        initialState();
     }
 
     const setOperation = operation =>{
